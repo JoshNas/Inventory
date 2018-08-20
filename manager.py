@@ -54,7 +54,18 @@ def display_item():
             display_window.insert('end', item)
 
     elif price:
+        if '>' in price:
+            result = Item.query.filter(Item.price >= price)
+            for i in result:
+                item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+                display_window.insert('end', item)
+
+
+
         result = session.query(Item).filter_by(price=price).all()
+        for i in result:
+            item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+            display_window.insert('end', item)
 
 
 

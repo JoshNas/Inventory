@@ -42,6 +42,7 @@ def display_inventory():
 
 
 def display_item():
+    display_window.delete(1.0, 'end')
     name = product_entry.get()
     price = price_entry.get()
     # count = count_entry.get()
@@ -55,22 +56,11 @@ def display_item():
 
     elif price:
         if '>' in price:
-            result = Item.query.filter(Item.price >= price)
+            price = price[1:]
+            result = session.query(Item).filter(Item.price > price).all()
             for i in result:
                 item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
                 display_window.insert('end', item)
-
-
-
-        result = session.query(Item).filter_by(price=price).all()
-        for i in result:
-            item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
-            display_window.insert('end', item)
-
-
-
-    # elif count:
-    #     result = session.query(Item).filter_by(count=count)
 
     product_entry.delete(0, 'end')
     price_entry.delete(0, 'end')

@@ -1,6 +1,6 @@
 import tkinter as tk
 from sqlalchemy import create_engine, Column, Integer, String, Float, Sequence
-from sqlalchemy.orm import sessionmaker, relationship, backref
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 engine = create_engine('sqlite:///inventory.db')
@@ -22,6 +22,7 @@ Base.metadata.create_all(engine)
 
 
 def add_item():
+    display_window.delete(1.0, 'end')
     name = product_entry.get()
     price = price_entry.get()
     count = count_entry.get()
@@ -31,14 +32,27 @@ def add_item():
         session.add(new_item)
         session.commit()
 
+    display_window.insert('end', f'{count} {name} at price ${price} added to inventory')
     product_entry.delete(0, 'end')
     price_entry.delete(0, 'end')
     count_entry.delete(0, 'end')
 
 
+def update():
+    name = product_entry.get()
+    price = price_entry.get()
+    count = count_entry.get()
+
+
+
 def display_inventory():
-    result = session.query('Inventory')
-    print(result)
+    display_window.delete(1.0, 'end')
+    result = session.query(Item).all()
+    if result:
+        for i in result:
+            item = f"{i.count} {i.name} \nprice = ${i.price} \n" \
+                   f"total value = ${i.count * i.price}\n\n"
+            display_window.insert('end', item)
 
 
 def display_item():
@@ -129,6 +143,7 @@ def delete_item():
     product_entry.delete(0, 'end')
     price_entry.delete(0, 'end')
     count_entry.delete(0, 'end')
+
 
 root = tk.Tk()
 root.geometry('1080x760')

@@ -45,7 +45,7 @@ def display_item():
     display_window.delete(1.0, 'end')
     name = product_entry.get()
     price = price_entry.get()
-    # count = count_entry.get()
+    count = count_entry.get()
 
     if name:
         result = session.query(Item).filter_by(name=name).first()
@@ -55,12 +55,60 @@ def display_item():
             display_window.insert('end', item)
 
     elif price:
-        if '>' in price:
+        if price[:2] == '>=':
+            price = price[2:]
+            result = session.query(Item).filter(Item.price >= price).all()
+            for i in result:
+                item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+                display_window.insert('end', item)
+        elif price[0] == '>':
             price = price[1:]
             result = session.query(Item).filter(Item.price > price).all()
             for i in result:
                 item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
                 display_window.insert('end', item)
+        elif price[:2] == '<=':
+            price = price[2:]
+            result = session.query(Item).filter(Item.price <= price).all()
+            for i in result:
+                item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+                display_window.insert('end', item)
+        elif price[0] == '<':
+            price = price[1:]
+            result = session.query(Item).filter(Item.price < price).all()
+            for i in result:
+                item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+                display_window.insert('end', item)
+        else:
+            display_window.insert('end', "Invalid Entry")
+
+    elif count:
+        if count[:2] == '>=':
+            count = count[2:]
+            result = session.query(Item).filter(Item.count >= count).all()
+            for i in result:
+                item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+                display_window.insert('end', item)
+        elif count[0] == '>':
+            count = count[1:]
+            result = session.query(Item).filter(Item.count > count).all()
+            for i in result:
+                item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+                display_window.insert('end', item)
+        elif count[:2] == '<=':
+            count = count[2:]
+            result = session.query(Item).filter(Item.count <= count).all()
+            for i in result:
+                item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+                display_window.insert('end', item)
+        elif count[0] == '<':
+            count = count[1:]
+            result = session.query(Item).filter(Item.count < count).all()
+            for i in result:
+                item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+                display_window.insert('end', item)
+        else:
+            display_window.insert('end', "Invalid Entry")
 
     product_entry.delete(0, 'end')
     price_entry.delete(0, 'end')
@@ -68,8 +116,19 @@ def display_item():
 
 
 def delete_item():
-    pass
+    display_window.delete(1.0, 'end')
+    name = product_entry.get()
+    obj = session.query(Item).filter(Item.name == name).first()
+    if obj:
+        session.delete(obj)
+        session.commit()
+        display_window.insert('end', f"Product {name} deleted from inventory")
+    else:
+        display_window.insert('end', f"Product {name} now in inventory")
 
+    product_entry.delete(0, 'end')
+    price_entry.delete(0, 'end')
+    count_entry.delete(0, 'end')
 
 root = tk.Tk()
 root.geometry('1080x760')

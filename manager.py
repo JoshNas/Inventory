@@ -42,7 +42,11 @@ def update():
     name = product_entry.get()
     price = price_entry.get()
     count = count_entry.get()
-
+    item = session.query(Item).filter_by(name=name).first()
+    item.price = price
+    item.count = count
+    session.commit()
+    display_item()
 
 
 def display_inventory():
@@ -94,7 +98,14 @@ def display_item():
                 item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
                 display_window.insert('end', item)
         else:
-            display_window.insert('end', "Invalid Entry")
+            try:
+                price = float(price)
+                result = session.query(Item).filter(Item.price == price).all()
+                for i in result:
+                    item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+                    display_window.insert('end', item)
+            except ValueError:
+                display_window.insert('end', "Invalid Entry")
 
     elif count:
         if count[:2] == '>=':
@@ -122,7 +133,14 @@ def display_item():
                 item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
                 display_window.insert('end', item)
         else:
-            display_window.insert('end', "Invalid Entry")
+            try:
+                count = int(count)
+                result = session.query(Item).filter(Item.count == count).all()
+                for i in result:
+                    item = f"{i.count} {i.name} \nprice = ${i.price} \n" f"total value = ${i.count * i.price}\n\n"
+                    display_window.insert('end', item)
+            except ValueError:
+                display_window.insert('end', "Invalid Entry")
 
     product_entry.delete(0, 'end')
     price_entry.delete(0, 'end')
@@ -171,6 +189,7 @@ tk.Button(keypad, text='Add', command=add_item).grid(row=0, column=0, sticky='ns
 tk.Button(keypad, text='Display Item', command=display_item).grid(row=0, column=1, sticky='nsew')
 tk.Button(keypad, text='Delete', command=delete_item).grid(row=0, column=2, sticky='nsew')
 tk.Button(keypad, text='Display All', command=display_inventory).grid(row=0, column=3, sticky='nsew')
+tk.Button(keypad, text='Update', command=update).grid(row=0, column=4, sticky='nsew')
 
 
 if __name__ == "__main__":
